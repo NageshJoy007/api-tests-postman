@@ -1,0 +1,212 @@
+{
+	"info": {
+		"_postman_id": "bcc824e4-0b98-44d4-9b44-f4198d0e2c2d",
+		"name": "sample-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetRoom",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2e7b977-1638-4b48-b3e8-5178d3678f06",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"roomid\");",
+							"});",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"setRoomid\", jsonData.rooms[0].roomid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d167267f-6539-415a-b85f-354cfdb7e7ad",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/room/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"room",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fdc89f16-8300-4638-8046-b5058ee8be14",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Body contains string token\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"token\");",
+							"});",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"loginToken\", jsonData.token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"password\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/auth/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1abef02c-792d-4221-9df6-e55e08160051",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "74dad7fa-ed75-4c66-859a-2ef914bd9fb3",
+						"exec": [
+							"var today = new Date(); ",
+							"var dd = today.getDate(); var dd2 = today.getDate()+1;",
+							"var mm = today.getMonth() + 1; //January is 0! ",
+							"var yyyy = today.getFullYear();",
+							"",
+							"if (dd < 10) {",
+							"  dd = '0' + dd;",
+							"} ",
+							"if (dd2 < 10) {",
+							"  dd2 = '0' + dd2;",
+							"} ",
+							"if (mm < 10) {",
+							"  mm = '0' + mm;",
+							"} ",
+							"var today = yyyy + '-' + mm + '-' + dd;",
+							"var tommorrow = yyyy + '-' + mm + '-' + dd2;",
+							"",
+							"// set todays & tommorrows date as checkin, checkoutDates",
+							"//postman.setEnvironmentVariable(\"checkinDate\", today);",
+							"//postman.setEnvironmentVariable(\"checkoutDate\", tommorrow);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Cookie",
+						"value": "token={{loginToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"bookingdates\": {\n    \"checkin\": \"{{checkinDate}}\",\n    \"checkout\": \"{{checkoutDate}}\"\n  },\n  \"depositpaid\": true,\n  \"firstname\": \"Nagesh\",\n  \"lastname\": \"Mittapalli\",\n  \"roomid\": {{setRoomid}},\n  \"totalprice\": 0\n}"
+				},
+				"url": {
+					"raw": "{{url}}/booking/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"booking",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "22f6946d-9b57-4924-809d-eb40b47da54b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b562c5ce-a609-45b3-b0a7-b507512b1ae3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
